@@ -1,6 +1,6 @@
 package net.einself.dateipoodle.resource;
 
-import net.einself.dateipoodle.domain.File;
+import net.einself.dateipoodle.domain.FileItem;
 import net.einself.dateipoodle.dto.UploadFileRequest;
 import net.einself.dateipoodle.service.FileService;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -30,17 +30,17 @@ public class UploadResource {
     @Path("/files")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public File upload(@Valid @MultipartForm UploadFileRequest uploadFileRequest) {
-        final var file1 = fileService.create(uploadFileRequest);
+    public FileItem upload(@Valid @MultipartForm UploadFileRequest uploadFileRequest) {
+        final var fileItem = fileService.create(uploadFileRequest);
 
         try {
-            final var dstPath = storagePath + "/" + file1.id;
+            final var dstPath = storagePath + "/" + fileItem.getId();
             Files.move(uploadFileRequest.file.toPath(), Paths.get(dstPath));
         } catch (IOException e) {
-            fileService.delete(file1);
+            fileService.delete(fileItem);
         }
 
-        return file1;
+        return fileItem;
     }
 
 }

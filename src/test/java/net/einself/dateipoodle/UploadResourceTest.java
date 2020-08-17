@@ -2,6 +2,7 @@ package net.einself.dateipoodle;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
+import net.einself.dateipoodle.domain.FileItem;
 import net.einself.dateipoodle.dto.UploadFileRequest;
 import net.einself.dateipoodle.service.FileService;
 import org.junit.jupiter.api.Test;
@@ -24,9 +25,9 @@ public class UploadResourceTest {
     @Test
     public void testOk() throws IOException {
         // given
-        final var file = new net.einself.dateipoodle.domain.File();
-        file.id = "foo";
-        file.name = "bar.jpg";
+        final var file = new FileItem();
+        file.setId("foo");
+        file.setName("bar.jpg");
 
         // given
         final var tmpFile = File.createTempFile("dateipoodle", "test");
