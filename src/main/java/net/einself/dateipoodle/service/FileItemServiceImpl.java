@@ -5,7 +5,6 @@ import net.einself.dateipoodle.domain.FileItem;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 
 @ApplicationScoped
 public class FileItemServiceImpl implements FileItemService {
@@ -18,7 +17,6 @@ public class FileItemServiceImpl implements FileItemService {
     }
 
     @Override
-    @Transactional
     public FileItem create(FileItem fileItem) {
         fileItem.setId(generateId());
         fileItemRepository.persist(fileItem);
@@ -26,7 +24,6 @@ public class FileItemServiceImpl implements FileItemService {
     }
 
     @Override
-    @Transactional
     public void delete(String id) {
         fileItemRepository.deleteById(id);
     }

@@ -1,6 +1,7 @@
 package net.einself.dateipoodle.resource;
 
 import net.einself.dateipoodle.service.FileItemService;
+import net.einself.dateipoodle.service.FileSystemService;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import javax.inject.Inject;
@@ -17,11 +18,17 @@ import java.nio.file.Paths;
 @Path("/")
 public class DownloadResource {
 
-    @Inject
-    FileItemService fileItemService;
+    private final FileItemService fileItemService;
+    private final FileSystemService fileSystemService;
 
     @ConfigProperty(name = "dateipoodle.storage.path")
     String storagePath;
+
+    @Inject
+    public DownloadResource(FileItemService fileItemService, FileSystemService fileSystemService) {
+        this.fileItemService = fileItemService;
+        this.fileSystemService = fileSystemService;
+    }
 
     @GET
     @Path("{id}")
@@ -34,7 +41,7 @@ public class DownloadResource {
         try {
             final var path = Paths.get(storagePath, id);
             final var bytes = Files.readAllBytes(path);
-            fileItemService.delete(id);
+            fileSystemService.delete(id);
             return Response.ok(bytes)
                     .header("Content-Length", bytes.length)
                     .header("Content-Type", MediaType.APPLICATION_OCTET_STREAM)
