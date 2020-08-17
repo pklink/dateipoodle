@@ -1,4 +1,4 @@
-package net.einself.dateipoodle;
+package net.einself.dateipoodle.resource;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
@@ -37,9 +37,7 @@ public class UploadResourceTest {
     @Test
     public void testOk() throws IOException {
         // given
-        final var fileItem = new FileItem();
-        fileItem.setId("foo");
-        fileItem.setName("bar.jpg");
+        final var fileItem = new FileItem("foo", "bar.jpg");
 
         // given
         final var tmpFile = File.createTempFile("dateipoodle", "test");
