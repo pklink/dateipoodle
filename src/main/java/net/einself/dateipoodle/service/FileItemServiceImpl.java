@@ -1,7 +1,7 @@
 package net.einself.dateipoodle.service;
 
-import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 import net.einself.dateipoodle.domain.FileItem;
+import net.einself.dateipoodle.generator.FileItemIdGenerator;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -9,16 +9,18 @@ import javax.inject.Inject;
 @ApplicationScoped
 public class FileItemServiceImpl implements FileItemService {
 
+    final FileItemIdGenerator fileItemIdGenerator;
     final FileItemRepository fileItemRepository;
 
     @Inject
-    public FileItemServiceImpl(FileItemRepository fileItemRepository) {
+    public FileItemServiceImpl(FileItemIdGenerator fileItemIdGenerator, FileItemRepository fileItemRepository) {
+        this.fileItemIdGenerator = fileItemIdGenerator;
         this.fileItemRepository = fileItemRepository;
     }
 
     @Override
     public FileItem create(FileItem fileItem) {
-        fileItem.setId(generateId());
+        fileItem.setId(fileItemIdGenerator.generate());
         fileItemRepository.persist(fileItem);
         return fileItem;
     }
@@ -36,16 +38,6 @@ public class FileItemServiceImpl implements FileItemService {
     @Override
     public boolean exists(String id) {
         return fileItemRepository.findByIdOptional(id).isPresent();
-    }
-
-    private String generateId() {
-        final var id = NanoIdUtils.randomNanoId();
-
-        if (fileItemRepository.findByIdOptional(id).isEmpty()) {
-            return id;
-        }
-
-        return generateId();
     }
 
 }

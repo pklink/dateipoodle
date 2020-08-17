@@ -4,7 +4,10 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
 import net.einself.dateipoodle.domain.FileItem;
 import net.einself.dateipoodle.service.FileItemService;
+import net.einself.dateipoodle.service.FileSystemService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import javax.ws.rs.core.MediaType;
@@ -14,6 +17,7 @@ import java.io.IOException;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 
 @QuarkusTest
 public class UploadResourceTest {
@@ -21,19 +25,28 @@ public class UploadResourceTest {
     @InjectMock
     FileItemService fileItemService;
 
+    @InjectMock
+    FileSystemService fileSystemService;
+
+    @BeforeEach
+    public void beforeAll() {
+        // given
+        Mockito.when(fileSystemService.store(ArgumentMatchers.any(), anyString())).thenReturn(true);
+    }
+
     @Test
     public void testOk() throws IOException {
         // given
-        final var file = new FileItem();
-        file.setId("foo");
-        file.setName("bar.jpg");
+        final var fileItem = new FileItem();
+        fileItem.setId("foo");
+        fileItem.setName("bar.jpg");
 
         // given
         final var tmpFile = File.createTempFile("dateipoodle", "test");
         tmpFile.deleteOnExit();
 
-        // when
-        Mockito.when(fileItemService.create(any(FileItem.class))).thenReturn(file);
+        // given
+        Mockito.when(fileItemService.create(any(FileItem.class))).thenReturn(fileItem);
 
         given()
             .multiPart("file", tmpFile)

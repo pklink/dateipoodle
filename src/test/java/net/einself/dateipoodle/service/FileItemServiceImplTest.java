@@ -1,6 +1,7 @@
 package net.einself.dateipoodle.service;
 
 import net.einself.dateipoodle.domain.FileItem;
+import net.einself.dateipoodle.generator.FileItemIdGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -13,12 +14,19 @@ class FileItemServiceImplTest {
 
     FileItemServiceImpl underTest;
 
+    FileItemIdGenerator fileItemIdGenerator;
     FileItemRepository fileItemRepository;
 
     @BeforeEach
     public void init() {
+        // given
+        fileItemIdGenerator = Mockito.mock(FileItemIdGenerator.class);
+        Mockito.when(fileItemIdGenerator.generate()).thenReturn("FAKE-ID");
+
+        // give
         fileItemRepository = Mockito.mock(FileItemRepository.class);
-        underTest = new FileItemServiceImpl(fileItemRepository);
+
+        underTest = new FileItemServiceImpl(fileItemIdGenerator, fileItemRepository);
     }
 
     @Test
@@ -31,7 +39,7 @@ class FileItemServiceImplTest {
         fileItem = underTest.create(fileItem);
 
         // then
-        assertNotNull(fileItem.getId());
+        assertEquals("FAKE-ID", fileItem.getId());
         assertEquals("foobar.1", fileItem.getName());
     }
 
