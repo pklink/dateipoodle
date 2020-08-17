@@ -9,6 +9,7 @@ import org.mockito.Mockito;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 
 class FileItemServiceImplTest {
 
@@ -87,6 +88,24 @@ class FileItemServiceImplTest {
 
         // then
         assertFalse(result);
+    }
+
+    @Test
+    public void testFindAndDeleteById() {
+        // given
+        final var fileItem = Optional.of(new FileItem("id", "foobar.jpg"));
+
+        // given
+        Mockito.when(fileItemRepository.findByIdOptional("id")).thenReturn(fileItem);
+
+        // when
+        final var result = underTest.findAndDeleteById("id");
+
+        // then
+        assertTrue(result.isPresent());
+        assertEquals("id", result.get().getId());
+        assertEquals("foobar.jpg", result.get().getName());
+        Mockito.verify(fileItemRepository).delete(any());
     }
 
 }
