@@ -5,6 +5,7 @@ import net.einself.dateipoodle.domain.FileItem;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.util.Optional;
 
 @ApplicationScoped
 public class FileItemServiceImpl implements FileItemService {
@@ -36,6 +37,13 @@ public class FileItemServiceImpl implements FileItemService {
     @Override
     public boolean exists(String id) {
         return fileItemRepository.findByIdOptional(id).isPresent();
+    }
+
+    @Override
+    public Optional<FileItem> findAndDeleteById(String id) {
+        final var fileItem = fileItemRepository.findByIdOptional(id);
+        fileItem.ifPresent(this::delete);
+        return fileItem;
     }
 
     private String generateId() {
