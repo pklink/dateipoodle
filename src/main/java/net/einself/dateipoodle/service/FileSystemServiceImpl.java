@@ -7,7 +7,9 @@ import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 
 @ApplicationScoped
 public class FileSystemServiceImpl implements FileSystemService {
@@ -17,6 +19,18 @@ public class FileSystemServiceImpl implements FileSystemService {
     @Inject
     public FileSystemServiceImpl(StorageConfig storageConfig) {
         this.storageConfig = storageConfig;
+    }
+
+    @Override
+    public Optional<File> get(String fileName) {
+        Path path = Paths.get(storageConfig.getPath(), fileName);
+        File file = path.toFile();
+
+        if (file.exists()) {
+            return Optional.of(file);
+        }
+
+        return Optional.empty();
     }
 
     @Override

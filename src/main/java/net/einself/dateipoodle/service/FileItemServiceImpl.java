@@ -1,7 +1,7 @@
 package net.einself.dateipoodle.service;
 
+import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 import net.einself.dateipoodle.domain.FileItem;
-import net.einself.dateipoodle.generator.FileItemIdGenerator;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -9,18 +9,16 @@ import javax.inject.Inject;
 @ApplicationScoped
 public class FileItemServiceImpl implements FileItemService {
 
-    final FileItemIdGenerator fileItemIdGenerator;
     final FileItemRepository fileItemRepository;
 
     @Inject
-    public FileItemServiceImpl(FileItemIdGenerator fileItemIdGenerator, FileItemRepository fileItemRepository) {
-        this.fileItemIdGenerator = fileItemIdGenerator;
+    public FileItemServiceImpl(FileItemRepository fileItemRepository) {
         this.fileItemRepository = fileItemRepository;
     }
 
     @Override
     public FileItem create(FileItem fileItem) {
-        fileItem.setId(fileItemIdGenerator.generate());
+        fileItem.setId(generateId());
         fileItemRepository.persist(fileItem);
         return fileItem;
     }
@@ -38,6 +36,13 @@ public class FileItemServiceImpl implements FileItemService {
     @Override
     public boolean exists(String id) {
         return fileItemRepository.findByIdOptional(id).isPresent();
+    }
+
+    @Override
+    public Optional<FileItem> findAndDeleteById(String id) {
+        final var fileItem = fileItemRepository.findByIdOptional(id);
+        fileItem.ifPresent(this::delete);
+        return fileItem;
     }
 
 }
