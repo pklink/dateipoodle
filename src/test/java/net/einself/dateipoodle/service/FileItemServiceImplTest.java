@@ -1,23 +1,84 @@
 package net.einself.dateipoodle.service;
 
-import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.junit.mockito.InjectMock;
+import net.einself.dateipoodle.domain.FileItem;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
-@QuarkusTest
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+
 class FileItemServiceImplTest {
 
     FileItemServiceImpl underTest;
 
-    @InjectMock
     FileItemRepository fileItemRepository;
 
     @BeforeEach
     public void init() {
+        fileItemRepository = Mockito.mock(FileItemRepository.class);
         underTest = new FileItemServiceImpl(fileItemRepository);
     }
 
+    @Test
+    public void testCreate() {
+        // given
+        var fileItem = new FileItem();
+        fileItem.setName("foobar.1");
 
+        // when
+        fileItem = underTest.create(fileItem);
 
+        // then
+        assertNotNull(fileItem.getId());
+        assertEquals("foobar.1", fileItem.getName());
+    }
+
+    @Test
+    public void testDelete_id() {
+        // when
+        underTest.delete("id1");
+
+        // then
+        Mockito.verify(fileItemRepository).deleteById("id1");
+    }
+
+    @Test
+    public void testDelete_entity() {
+        // given
+        var fileItem = new FileItem();
+        fileItem.setId("id1");
+
+        // when
+        underTest.delete(fileItem);
+
+        // then
+        Mockito.verify(fileItemRepository).delete(fileItem);
+    }
+
+    @Test
+    public void testExists_true() {
+        // given
+        Mockito.when(fileItemRepository.findByIdOptional("id1")).thenReturn(Optional.of(new FileItem()));
+
+        // when
+        final var result = underTest.exists("id1");
+
+        // then
+        assertTrue(result);
+    }
+
+    @Test
+    public void testExists_false() {
+        // given
+        Mockito.when(fileItemRepository.findByIdOptional("id1")).thenReturn(Optional.empty());
+
+        // when
+        final var result = underTest.exists("id1");
+
+        // then
+        assertFalse(result);
+    }
 
 }
