@@ -1,17 +1,22 @@
 package net.einself.dateipoodle.domain;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
-
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @Entity
-public class FileItem extends PanacheEntityBase {
+public class FileItem {
 
     @Id
     private String id;
     private String name;
 
+    public FileItem() {
+    }
+
+    public FileItem(String id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 
     public String getId() {
         return id;

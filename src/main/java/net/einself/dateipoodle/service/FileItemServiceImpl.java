@@ -2,45 +2,52 @@ package net.einself.dateipoodle.service;
 
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 import net.einself.dateipoodle.domain.FileItem;
-import net.einself.dateipoodle.dto.UploadFileRequest;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import javax.transaction.Transactional;
 
 @ApplicationScoped
 public class FileItemServiceImpl implements FileItemService {
 
+    final FileItemRepository fileItemRepository;
+
+    @Inject
+    public FileItemServiceImpl(FileItemRepository fileItemRepository) {
+        this.fileItemRepository = fileItemRepository;
+    }
+
     @Override
     @Transactional
-    public FileItem create(UploadFileRequest request) {
-        final var file = new FileItem();
-        file.setId(generateId());
-        file.setName(request.fileName);
-        FileItem.persist(file);
-        return file;
+    public FileItem create(FileItem fileItem) {
+        fileItem.setId(generateId());
+        fileItemRepository.persist(fileItem);
+        return fileItem;
     }
 
     @Override
     @Transactional
     public void delete(String id) {
-        FileItem.deleteById(id);
+        fileItemRepository.deleteById(id);
     }
 
     @Override
     public void delete(FileItem fileItem) {
-        FileItem.deleteById(fileItem.getId());
+        fileItemRepository.delete(fileItem);
     }
 
     @Override
     public boolean exists(String id) {
-        return FileItem.findByIdOptional(id).isPresent();
+        return fileItemRepository.findByIdOptional(id).isPresent();
     }
 
     private String generateId() {
         final var id = NanoIdUtils.randomNanoId();
-        if (FileItem.findById(id) == null) {
+
+        if (fileItemRepository.findByIdOptional(id).isEmpty()) {
             return id;
         }
+
         return generateId();
     }
 

@@ -1,5 +1,7 @@
 package net.einself.dateipoodle.resource;
 
+import net.einself.dateipoodle.converter.Converter;
+import net.einself.dateipoodle.converter.UploadFileRequestToFileItemConverter;
 import net.einself.dateipoodle.domain.FileItem;
 import net.einself.dateipoodle.dto.UploadFileRequest;
 import net.einself.dateipoodle.service.FileItemService;
@@ -20,27 +22,37 @@ import java.nio.file.Paths;
 @Path("/")
 public class UploadResource {
 
-    @Inject
-    FileItemService fileItemService;
+    private final Converter<UploadFileRequest, FileItem> dtoConverter;
+    private final FileItemService fileItemService;
 
     @ConfigProperty(name = "dateipoodle.storage.path")
     String storagePath;
+
+    @Inject
+    public UploadResource(UploadFileRequestToFileItemConverter dtoConverter, FileItemService fileItemService) {
+        this.dtoConverter = dtoConverter;
+        this.fileItemService = fileItemService;
+    }
 
     @POST
     @Path("/files")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     public FileItem upload(@Valid @MultipartForm UploadFileRequest uploadFileRequest) {
-        final var fileItem = fileItemService.create(uploadFileRequest);
+        // convert dto to entity
+        var entity = dtoConverter.one(uploadFileRequest);
+
+        // persist entity
+        entity = fileItemService.create(entity);
 
         try {
-            final var dstPath = storagePath + "/" + fileItem.getId();
-            Files.move(uploadFileRequest.file.toPath(), Paths.get(dstPath));
+            final var dstPath = storagePath + "/" + entity.getId();
+            Files.move(uploadFileRequest.getFile().toPath(), Paths.get(dstPath));
         } catch (IOException e) {
-            fileItemService.delete(fileItem);
+            fileItemService.delete(entity);
         }
 
-        return fileItem;
+        return entity;
     }
 
 }
