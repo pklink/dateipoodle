@@ -8,7 +8,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.transaction.Transactional;
 
 @ApplicationScoped
-public class FileServiceImpl implements FileService {
+public class FileItemServiceImpl implements FileItemService {
 
     @Override
     @Transactional

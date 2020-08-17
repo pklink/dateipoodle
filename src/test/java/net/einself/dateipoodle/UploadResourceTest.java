@@ -4,7 +4,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
 import net.einself.dateipoodle.domain.FileItem;
 import net.einself.dateipoodle.dto.UploadFileRequest;
-import net.einself.dateipoodle.service.FileService;
+import net.einself.dateipoodle.service.FileItemService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -20,7 +20,7 @@ import static org.mockito.ArgumentMatchers.any;
 public class UploadResourceTest {
 
     @InjectMock
-    FileService fileService;
+    FileItemService fileItemService;
 
     @Test
     public void testOk() throws IOException {
@@ -34,7 +34,7 @@ public class UploadResourceTest {
         tmpFile.deleteOnExit();
 
         // when
-        Mockito.when(fileService.create(any(UploadFileRequest.class))).thenReturn(file);
+        Mockito.when(fileItemService.create(any(UploadFileRequest.class))).thenReturn(file);
 
         given()
             .multiPart("file", tmpFile)

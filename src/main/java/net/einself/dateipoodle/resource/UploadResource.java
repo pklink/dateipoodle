@@ -2,7 +2,7 @@ package net.einself.dateipoodle.resource;
 
 import net.einself.dateipoodle.domain.FileItem;
 import net.einself.dateipoodle.dto.UploadFileRequest;
-import net.einself.dateipoodle.service.FileService;
+import net.einself.dateipoodle.service.FileItemService;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 
@@ -21,7 +21,7 @@ import java.nio.file.Paths;
 public class UploadResource {
 
     @Inject
-    FileService fileService;
+    FileItemService fileItemService;
 
     @ConfigProperty(name = "dateipoodle.storage.path")
     String storagePath;
@@ -31,13 +31,13 @@ public class UploadResource {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     public FileItem upload(@Valid @MultipartForm UploadFileRequest uploadFileRequest) {
-        final var fileItem = fileService.create(uploadFileRequest);
+        final var fileItem = fileItemService.create(uploadFileRequest);
 
         try {
             final var dstPath = storagePath + "/" + fileItem.getId();
             Files.move(uploadFileRequest.file.toPath(), Paths.get(dstPath));
         } catch (IOException e) {
-            fileService.delete(fileItem);
+            fileItemService.delete(fileItem);
         }
 
         return fileItem;

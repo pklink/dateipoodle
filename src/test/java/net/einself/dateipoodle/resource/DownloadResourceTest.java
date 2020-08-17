@@ -2,17 +2,17 @@ package net.einself.dateipoodle.resource;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
-import net.einself.dateipoodle.service.FileService;
+import net.einself.dateipoodle.service.FileItemService;
 import org.mockito.Mockito;
 
 @QuarkusTest
 class DownloadResourceTest {
 
     @InjectMock
-    FileService fileService;
+    FileItemService fileItemService;
 
     public void testOk() {
-        Mockito.when(fileService.exists("foo")).thenReturn(true);
+        Mockito.when(fileItemService.exists("foo")).thenReturn(true);
     }
 
 
