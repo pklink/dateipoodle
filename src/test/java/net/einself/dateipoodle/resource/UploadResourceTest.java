@@ -5,7 +5,6 @@ import io.quarkus.test.junit.mockito.InjectMock;
 import net.einself.dateipoodle.domain.FileItem;
 import net.einself.dateipoodle.service.FileItemService;
 import net.einself.dateipoodle.service.FileSystemService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
@@ -28,20 +27,17 @@ public class UploadResourceTest {
     @InjectMock
     FileSystemService fileSystemService;
 
-    @BeforeEach
-    public void beforeAll() {
-        // given
-        Mockito.when(fileSystemService.store(ArgumentMatchers.any(), anyString())).thenReturn(true);
-    }
-
     @Test
-    public void testOk() throws IOException {
+    public void test200() throws IOException {
         // given
         final var fileItem = new FileItem("foo", "bar.jpg");
 
         // given
         final var tmpFile = File.createTempFile("dateipoodle", "test");
         tmpFile.deleteOnExit();
+
+        // given
+        Mockito.when(fileSystemService.store(ArgumentMatchers.any(), anyString())).thenReturn(true);
 
         // given
         Mockito.when(fileItemService.create(any(FileItem.class))).thenReturn(fileItem);
@@ -85,6 +81,31 @@ public class UploadResourceTest {
             .when().post("/files")
             .then()
             .statusCode(400);
+    }
+
+    @Test
+    public void test500() throws IOException {
+        // given
+        final var fileItem = new FileItem("foo", "bar.jpg");
+
+        // given
+        Mockito.when(fileSystemService.store(ArgumentMatchers.any(), anyString())).thenReturn(false);
+
+        // given
+        final var tmpFile = File.createTempFile("dateipoodle", "test");
+        tmpFile.deleteOnExit();
+
+        // given
+        Mockito.when(fileItemService.create(any(FileItem.class))).thenReturn(fileItem);
+
+        // then
+        given()
+            .multiPart("file", tmpFile)
+            .multiPart("fileName", "test.jpg")
+            .when().post("/files")
+            .then()
+            .statusCode(500);
+        Mockito.verify(fileItemService).delete(fileItem);
     }
 
 }
