@@ -42,8 +42,19 @@ RUN microdnf install curl ca-certificates ${JAVA_PACKAGE} \
     && chmod 540 /deployments/run-java.sh \
     && echo "securerandom.source=file:/dev/urandom" >> /etc/alternatives/jre/lib/security/java.security
 
+# Application preperation
+RUN mkdir -p /data/uploads \
+    && chown -R 1001 /data
+
 # Configure the JAVA_OPTIONS, you can add -XshowSettings:vm to also display the heap size.
 ENV JAVA_OPTIONS="-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
+
+# Application configuration
+ENV DATEIPOODLE_STORAGE_PATH=/data/uploads
+ENV DATEIPOODLE_MAX-FILE-SIZE=128M
+
+# Application volumes
+VOLUME /data
 
 COPY target/lib/* /deployments/lib/
 COPY target/*-runner.jar /deployments/app.jar
