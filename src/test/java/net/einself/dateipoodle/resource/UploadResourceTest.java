@@ -2,6 +2,7 @@ package net.einself.dateipoodle.resource;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
+import io.quarkus.test.security.TestSecurity;
 import net.einself.dateipoodle.domain.FileItem;
 import net.einself.dateipoodle.service.FileItemService;
 import net.einself.dateipoodle.service.FileSystemService;
@@ -19,6 +20,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 
 @QuarkusTest
+@TestSecurity(user = "admin", roles = "admin")
 public class UploadResourceTest {
 
     @InjectMock
