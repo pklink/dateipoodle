@@ -1,14 +1,10 @@
 # dateipoodle
 
-## Roadmap
+Stupid simple file sharing application for modern browsers based on [Quarkus](https://quarkus.io/), [Mithril](https://mithril.js.org/) and ES6.
 
-* tests
-* auth
-* multi user
+## Features
 
-## Credits
-
-* https://quarkus.io/
-* https://github.com/aventrix/jnanoid
-* https://github.com/jgthms/minireset.css/
-* https://material.io/resources/icons/
+* flat file (no database needed)
+* password proteced upload area
+* cryptic download links
+* docker image using native executable (not provided yet)
