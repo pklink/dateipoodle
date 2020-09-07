@@ -5,6 +5,7 @@ import net.einself.dateipoodle.dto.FileObject;
 import net.einself.dateipoodle.dto.request.UploadFileRequest;
 import net.einself.dateipoodle.service.FileSystemService;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 
 import javax.inject.Inject;
@@ -32,7 +33,8 @@ public class FilesResource {
 
     // TODO test
     URI createDownloadURI(FileObject fileObject) {
-        final var url = StringUtils.stripEnd(appConfig.getBaseUrl(), "/") + "/" + fileObject.getName();
+        final var fileName = URLEncodedUtils.formatSegments(fileObject.getName());
+        final var url = StringUtils.stripEnd(appConfig.getBaseUrl(), "/") + "/" + fileName;
         return URI.create(url);
     }
 
