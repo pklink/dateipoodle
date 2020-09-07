@@ -1,11 +1,9 @@
 html {
     background-color: #fff;
     padding: 3rem calc(50% - 25rem);
-}
-
-html {
     font-family: "Lucida Console", Monaco, monospace;
 }
+
 
 @media (min-width: 640px) {
     body {
@@ -82,3 +80,36 @@ body {
     background-color: rgb(230, 230, 230);
 }
 
+#files {
+    padding-top: 1rem;
+}
+
+table.files {
+    width: 100%;
+    line-height: 1.5rem
+}
+
+table.files tbody tr:nth-child(odd) {
+    background-color: rgba(0, 0, 0, .02);
+}
+
+table.files tbody tr:hover {
+    background-color: rgba(0, 0, 0, .05);
+}
+
+table.files td, table.files th {
+    padding: .5rem .5rem;
+}
+
+table.files td.actions {
+    text-align: right;
+}
+
+table.files td.actions a {
+    cursor: pointer;
+    margin-left: .5rem;
+}
+
+table.files td.actions a:first-child {
+    margin: 0;
+}

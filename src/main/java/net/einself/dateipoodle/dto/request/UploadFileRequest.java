@@ -1,4 +1,4 @@
-package net.einself.dateipoodle.dto;
+package net.einself.dateipoodle.dto.request;
 
 import org.jboss.resteasy.annotations.providers.multipart.PartType;
 

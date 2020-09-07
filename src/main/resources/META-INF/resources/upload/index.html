@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <title>dateipoodle</title>
     <link href="https://cdn.rawgit.com/jgthms/minireset.css/master/minireset.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://unpkg.com/@coreui/icons/css/free.min.css">
     <link href="app.css" rel="stylesheet"/>
-
+    <script src="https://unpkg.com/mithril/mithril.js"></script>
 </head>
 <body>
 
@@ -29,6 +30,43 @@
             <div class="url">
                 <input type="text" value="http://localhost:8080/S5MzaHcXLhw3YpnwBNCJA">
                 <input type="button">
+            </div>
+        </div>
+        -->
+    </section>
+    <section id="files">
+        <table>
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td class="name">foobar.jpg</td>
+                <td class="actions">
+                    <a href="#"><i data-feather="clipboard"></i></a>
+                    <a href="#"><i data-feather="download"></i></a>
+                    <a href="#"><i data-feather="trash-2"></i></a>
+                </td>
+            </tr>
+            <tr>
+                <td class="name">foobar.jpg</td>
+                <td class="actions">
+                    <a href="#"><i data-feather="clipboard"></i></a>
+                    <a href="#"><i data-feather="download"></i></a>
+                    <a href="#"><i data-feather="trash-2"></i></a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <!--
+        <div class="file">
+            <span class="name">foobar.jpg</span>
+            <div class="actions">
+                <a class="download"></a>
+                <a class="delete"></a>
             </div>
         </div>
         -->

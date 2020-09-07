@@ -1,6 +1,5 @@
 package net.einself.dateipoodle.resource;
 
-import net.einself.dateipoodle.service.FileItemService;
 import net.einself.dateipoodle.service.FileSystemService;
 
 import javax.inject.Inject;
@@ -15,12 +14,10 @@ import javax.ws.rs.core.Response;
 @Path("/")
 public class DownloadResource {
 
-    private final FileItemService fileItemService;
     private final FileSystemService fileSystemService;
 
     @Inject
-    public DownloadResource(FileItemService fileItemService, FileSystemService fileSystemService) {
-        this.fileItemService = fileItemService;
+    public DownloadResource(FileSystemService fileSystemService) {
         this.fileSystemService = fileSystemService;
     }
 
@@ -29,18 +26,12 @@ public class DownloadResource {
     @Produces(MediaType.TEXT_PLAIN)
     @Transactional
     public Response download(@PathParam("id") String id) {
-        // get file item and delete then
-        final var fileItem = fileItemService.findAndDeleteById(id);
-
-        // check if file item exists
-        if (fileItem.isEmpty()) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
         return fileSystemService.get(id)
             .map(file -> Response.ok(file)
                 .header("Content-Length", file.length())
                 .header("Content-Type", MediaType.APPLICATION_OCTET_STREAM)
-                .header("Content-Disposition", "attachment; filename=" + fileItem.get().getName())
+                // TODO
+                .header("Content-Disposition", "attachment; filename=" + "foo.jpg")
                 .build()
             ).orElseGet(() -> Response.status(Response.Status.NOT_FOUND).build());
     }

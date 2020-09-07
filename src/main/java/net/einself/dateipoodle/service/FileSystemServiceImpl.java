@@ -1,6 +1,8 @@
 package net.einself.dateipoodle.service;
 
 import net.einself.dateipoodle.config.StorageConfig;
+import net.einself.dateipoodle.dto.FileObject;
+import org.apache.commons.lang3.RandomStringUtils;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -9,7 +11,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Instant;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @ApplicationScoped
 public class FileSystemServiceImpl implements FileSystemService {
@@ -34,6 +38,17 @@ public class FileSystemServiceImpl implements FileSystemService {
     }
 
     @Override
+    public Stream<File> getAll() {
+        try {
+            return Files.walk(Paths.get(storageConfig.getPath()))
+                .map(Path::toFile)
+                .filter(File::isFile);
+        } catch (IOException e) {
+            return Stream.empty();
+        }
+    }
+
+    @Override
     public void delete(String fileName) {
         final var path = Paths.get(storageConfig.getPath(), fileName);
         try {
@@ -44,15 +59,18 @@ public class FileSystemServiceImpl implements FileSystemService {
     }
 
     @Override
-    public boolean store(File file, String fileName) {
-        final var dstPath = Paths.get(storageConfig.getPath(), fileName);
+    public Optional<FileObject> store(File file, String originalFileName) {
+        final var epochSecond = Instant.now().getEpochSecond();
+        final var rndString = RandomStringUtils.randomAlphabetic(4);
+        final var dstFileName = String.format("%d-%s-%s", epochSecond, rndString, originalFileName);
+        final var dstPath = Paths.get(storageConfig.getPath(), dstFileName);
 
         try {
             Files.move(file.toPath(), dstPath);
-            return true;
+            return Optional.of(new FileObject(dstFileName, originalFileName));
         } catch (IOException e) {
             e.printStackTrace();
-            return false;
+            return Optional.empty();
         }
     }
 

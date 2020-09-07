@@ -58,17 +58,17 @@ class Dropzone extends EventTarget {
         formData.append("file", file)
         formData.append("fileName", file.name)
 
-        fetch(this.url, {
+        m.request({
+            url: this.url,
             method: 'POST',
-            body: formData
+            body: formData,
+            responseType: "json",
+            extract: xhr => ({ ...xhr.response, url: xhr.getResponseHeader('Location') })
+        }).then(response => {
+            const el = new LinkComponent(response).el
+            const container = document.getElementById('links')
+            container.appendChild(el)
         })
-            .then(resp => resp.json())
-            .then(json => ({ url: location.href + json.id, name: json.name }))
-            .then(upload => {
-                const el = new LinkComponent(upload).el
-                const container = document.getElementById('links')
-                container.appendChild(el)
-            })
     }
 
     browseFiles() {
@@ -215,7 +215,7 @@ class LabelComponent {
      */
     constructor(opts = {}) {
         this.opts = opts
-        this.el = this._template(opts.name)
+        this.el = this._template()
     }
 
     /**
@@ -224,7 +224,7 @@ class LabelComponent {
      */
     _template() {
         const el = document.createElement('label')
-        el.textContent = this.opts.name
+        el.textContent = this.opts.originalName
         return el;
     }
 
@@ -234,4 +234,71 @@ new Dropzone(document.getElementById('dropzone'), {
     url: '/files'
 })
 
+class FilesTableComponent {
+    constructor() {
+        this.files = []
+        this.loadFiles()
+    }
+    loadFiles() {
+        m.request({
+            method: 'GET',
+            url: '/files'
+        }).then(files => this.files = files)
+    }
+    view() {
+        return m('table.files', [
+            m('thead', [
+                m('tr', [ m('th', 'Name'), m('th') ]),
+            ]),
+            m('tbody', [
+                this.files.map(file => m(FilesTableRowComponent, { key: file, file }))
+            ]),
+        ])
+    }
+}
 
+class FilesTableRowComponent {
+    constructor(vnode) {
+        this.file = vnode.attrs.file
+    }
+    view() {
+        return m('tr', [
+            m('td.name', this.file),
+            m('td.actions', [
+                m(LinkIconComponent, { icon: 'cil-data-transfer-down' }),
+                m(DeleteFileComponent),
+            ]),
+        ])
+    }
+}
+
+class IconComponent {
+    constructor(vnode) {
+        this.icon = vnode.attrs.icon
+    }
+    view() {
+        return m('i', { class: this.icon })
+    }
+}
+
+class LinkIconComponent {
+    constructor(vnode) {
+        this.icon = vnode.attrs.icon
+    }
+    view() {
+        return m('a', [
+            m(IconComponent, { icon: this.icon })
+        ])
+    }
+}
+
+class DeleteFileComponent {
+    view() {
+        return m('a', { onclick: () => alert(112) }, [
+            m(IconComponent, { icon: 'cil-trash' })
+        ])
+    }
+}
+
+// m.mount(document.getElementById('files'), LoadButton)
+m.mount(document.getElementById('files'), FilesTableComponent)

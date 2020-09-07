@@ -2,8 +2,6 @@ package net.einself.dateipoodle.resource;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
-import net.einself.dateipoodle.domain.FileItem;
-import net.einself.dateipoodle.service.FileItemService;
 import net.einself.dateipoodle.service.FileSystemService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -20,19 +18,10 @@ import static io.restassured.RestAssured.given;
 class DownloadResourceTest {
 
     @InjectMock
-    FileItemService fileItemService;
-
-    @InjectMock
     FileSystemService fileSystemService;
 
     @Test
-    public void testOk() throws IOException {
-        // given
-        final var fileItem = Optional.of(new FileItem("id", "foo.jpg"));
-
-        // given
-        Mockito.when(fileItemService.findAndDeleteById("id")).thenReturn(fileItem);
-
+    public void testDownload_Ok() throws IOException {
         // given
         final var file = Files.createTempFile("dateipoodle", "test").toFile();
 
@@ -49,24 +38,7 @@ class DownloadResourceTest {
     }
 
     @Test
-    public void testNotFound_db() {
-        // given
-        Mockito.when(fileItemService.findAndDeleteById("id")).thenReturn(Optional.empty());
-
-        given()
-            .when().get("/id")
-            .then()
-            .statusCode(Response.Status.NOT_FOUND.getStatusCode());
-    }
-
-    @Test
-    public void testNotFound_fs() {
-        // given
-        final var fileItem = Optional.of(new FileItem("id", "foo.jpg"));
-
-        // given
-        Mockito.when(fileItemService.findAndDeleteById("id")).thenReturn(fileItem);
-
+    public void testDownload_NotFound() {
         // given
         Mockito.when(fileSystemService.get("id")).thenReturn(Optional.empty());
 
